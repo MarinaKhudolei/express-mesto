@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
+const helmet = require('helmet');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const helmet = require('helmet');
 
 const app = express();
 
