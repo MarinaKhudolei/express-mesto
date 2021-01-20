@@ -1,29 +1,29 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  "name": {
+  name: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
-  "about": {
+  about: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
-  "avatar": {
+  avatar: {
     type: String,
     required: true,
     validate: {
       validator(v) {
-        const url_regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
-        return url_regex.test(v);
+        const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+        return regex.test(v);
       },
-      message: 'Ссылка не валидна'
-    }
-  }
+      message: 'Ссылка не валидна',
+    },
+  },
 });
 
 const userModel = mongoose.model('user', userSchema);

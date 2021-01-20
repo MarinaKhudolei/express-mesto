@@ -1,16 +1,17 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for the project Mesto",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Marina Khudolei",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "helmet": "^4.3.1",
@@ -21,7 +22,6 @@
     "eslint": "^7.16.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-react": "^7.21.5",
     "nodemon": "^2.0.6"
   }
 }
