@@ -11,7 +11,7 @@ const createCard = (req, res) => {
   const ownerId = req.user._id;
   const { name, link } = req.body;
   Card.create({ name, link, owner: ownerId })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: `Неверные данные: ${err}` });
@@ -21,15 +21,15 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const cardId = req.params._id;
-  Card.findByIdAndRemove(cardId)
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: `Карточка не найдена: ${cardId}` });
+  const { cardId } = req.params;
+  Card.findByIdAndRemove({ cardId })
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: `Карточка не найдена: ${err}` });
       }
-      return res.status(200).send(card);
-    })
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
 
 const likeCard = (req, res) => {
@@ -43,7 +43,12 @@ const likeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: `Неправильный запрос: ${cardId}` });
+      }
+      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -57,7 +62,12 @@ const dislikeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: `Неправильный запрос: ${cardId}` });
+      }
+      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
 
 module.exports = {

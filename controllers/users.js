@@ -7,11 +7,11 @@ const getUsers = (req, res) => {
 };
 
 const getProfile = (req, res) => {
-  const { id } = req.params;
-  User.findOne({ id })
+  const userId = req.params._id;
+  User.findOne({ userId })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: `Нет пользователя с таким id: ${id}` });
+        return res.status(404).send({ message: `Нет пользователя с таким id: ${userId}` });
       }
       return res.status(200).send(user);
     })
@@ -39,12 +39,12 @@ const updateProfile = (req, res) => {
       runValidators: true,
       upsert: true,
     })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => {
+      res.status(201).send({ data: user });
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: `Неверные данные: ${err}` });
-      } if (err.name === 'CastError') {
-        return res.status(404).send({ message: `Пользователь не найден: ${err}` });
       }
       return res.status(500).send({ message: `Ошибка сервера: ${err}` });
     });
