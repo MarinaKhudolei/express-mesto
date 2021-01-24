@@ -8,7 +8,7 @@ const getUsers = (req, res) => {
 
 const getProfile = (req, res) => {
   const userId = req.params._id;
-  User.findOne({ userId })
+  User.findOne({ _id: userId })
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: `Нет пользователя с таким id: ${userId}` });
@@ -36,8 +36,7 @@ const updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about },
     {
       new: true,
-      runValidators: true,
-      upsert: true,
+      runValidators: true
     })
     .then((user) => {
       res.status(201).send({ data: user });
