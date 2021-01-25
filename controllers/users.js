@@ -15,7 +15,12 @@ const getProfile = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: `Неверные данные: ${err}` });
+      }
+      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
 
 const createUser = (req, res) => {
@@ -36,13 +41,13 @@ const updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     })
     .then((user) => {
       res.status(201).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if ((err.name === 'CastError') || (err.name === 'ValidationError')) {
         return res.status(400).send({ message: `Неверные данные: ${err}` });
       }
       return res.status(500).send({ message: `Ошибка сервера: ${err}` });
