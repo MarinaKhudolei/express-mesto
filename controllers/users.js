@@ -1,9 +1,16 @@
 const User = require('../models/user');
 
+function userErrorHandler(res, err) {
+  if ((err.name === 'CastError') || (err.name === 'ValidationError')) {
+    return res.status(400).send({ message: `Неверные данные: ${err}` });
+  }
+  return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+}
+
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+    .catch((err) => userErrorHandler(res, err));
 };
 
 const getProfile = (req, res) => {
@@ -15,24 +22,14 @@ const getProfile = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => userErrorHandler(res, err));
 };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => userErrorHandler(res, err));
 };
 
 const updateProfile = (req, res) => {
@@ -46,12 +43,7 @@ const updateProfile = (req, res) => {
     .then((user) => {
       res.status(201).send({ data: user });
     })
-    .catch((err) => {
-      if ((err.name === 'CastError') || (err.name === 'ValidationError')) {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => userErrorHandler(res, err));
 };
 
 const updateAvatar = (req, res) => {
@@ -60,17 +52,9 @@ const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
-    upsert: true,
   })
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      } if (err.name === 'CastError') {
-        return res.status(404).send({ message: `Пользователь не найден: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => userErrorHandler(res, err));
 };
 
 module.exports = {

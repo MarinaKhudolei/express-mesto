@@ -1,10 +1,17 @@
 const Card = require('../models/card');
 
+function cardErrorHandler(res, err) {
+  if ((err.name === 'CastError') || (err.name === 'ValidationError')) {
+    return res.status(400).send({ message: `Неверные данные: ${err}` });
+  }
+  return res.status(500).send({ message: `Ошибка сервера: ${err}` });
+}
+
 const getCards = (req, res) => {
   Card.find({})
     .populate('user')
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера: ${err}` }));
+    .catch((err) => cardErrorHandler(res, err));
 };
 
 const createCard = (req, res) => {
@@ -12,12 +19,7 @@ const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: ownerId })
     .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => cardErrorHandler(res, err));
 };
 
 const deleteCard = (req, res) => {
@@ -29,12 +31,7 @@ const deleteCard = (req, res) => {
       }
       return res.status(200).send({ data: card });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: `Неверные данные: ${err}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => cardErrorHandler(res, err));
 };
 
 const likeCard = (req, res) => {
@@ -48,12 +45,7 @@ const likeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: `Неверные данные: ${cardId}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => cardErrorHandler(res, err));
 };
 
 const dislikeCard = (req, res) => {
@@ -67,12 +59,7 @@ const dislikeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: `Неверные данные: ${cardId}` });
-      }
-      return res.status(500).send({ message: `Ошибка сервера: ${err}` });
-    });
+    .catch((err) => cardErrorHandler(res, err));
 };
 
 module.exports = {
